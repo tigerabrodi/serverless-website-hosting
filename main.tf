@@ -64,3 +64,25 @@ resource "aws_s3_bucket_website_configuration" "website_bucket_website_configura
   }
 
 }
+
+resource "aws_s3_object" "index_html" {
+  bucket = aws_s3_bucket.website_bucket.id
+  key    = "index.html"
+  source = "./content/index.html"
+  acl    = "public-read"
+}
+
+resource "aws_s3_object" "style_css" {
+  bucket = aws_s3_bucket.website_bucket.id
+  key    = "style.css"
+  source = "./content/style.css"
+  acl    = "public-read"
+}
+
+resource "aws_s3_object" "error_html" {
+  bucket = aws_s3_bucket.website_bucket.id
+  key    = "error.html"
+  source = "./content/error.html"
+  acl    = "public-read"
+}
+
