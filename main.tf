@@ -1,9 +1,9 @@
 terraform {
 
   cloud {
-    organization = "tiger_projects"
+    organization = "{your-organization-name}"
     workspaces {
-      name = "serverless-website-hosting"
+      name = "{your-workspace-name}"
     }
   }
 
@@ -22,7 +22,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "website_bucket" {
-  bucket = "tiger-kun-website-bucket"
+  bucket = "{your-bucket-name}"
 
 }
 
