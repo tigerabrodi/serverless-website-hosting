@@ -89,3 +89,46 @@ resource "aws_s3_object" "error_html" {
   acl          = "public-read"
 }
 
+resource "aws_cloudfront_distribution" "website_cdn" {
+  origin {
+    domain_name = aws_s3_bucket.website_bucket.bucket_regional_domain_name # DNS name to fetch content from
+    origin_id   = "S3-${aws_s3_bucket.website_bucket.id}"                  # unique identifier for origin
+  }
+
+  enabled = true # is distribution enabled
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"] # Methods that CloudFront processes and forwards to the origin, GET and HEAD are typical for static sites
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3-${aws_s3_bucket.website_bucket.id}" # origin to route requests to
+
+    forwarded_values {
+      query_string = false # do not forward query strings to origin
+
+      cookies {
+        forward = "none" # do not forward cookies to origin
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https" # redirect HTTP requests to HTTPS, this improves security
+
+    # ttl determines how long CloudFront caches objects, it's in seconds
+    min_ttl     = 0
+    default_ttl = 3600
+    max_ttl     = 86400
+  }
+
+  price_class = "PriceClass_100" # Geo locations to deliver content, this is the cheapest option, only US, Canada and Europe
+
+  # restriction configures who can or can't access the content
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  # Configures the SSL/TLS certificate to use, default is the one provided by AWS
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+}
